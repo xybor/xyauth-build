@@ -9,7 +9,7 @@ DOCKER_COMPOSE_FILE=deploy/compose.yaml
 
 IMAGE_NAME=xyauth
 
-.PHONY: run clean docker-gen docker-build docker-start docker-stop docker-clean
+.PHONY: build run clean docker-gen docker-build docker-start docker-stop docker-clean gen-dockerfile gen-docker-compose
 
 database:
 	go build -o $(DATABASE) ./cmd/database/*.go
@@ -27,11 +27,15 @@ run: database server
 	$(DATABASE) migrate
 	$(SERVER)
 
-docker-gen: template
-	$(TEMPLATE) $(DOCKERFILE).template
-	$(TEMPLATE) $(DOCKER_COMPOSE_FILE).template
+docker-gen: gen-dockerfile gen-docker-compose
 
-docker-build: clean docker-clean
+gen-dockerfile: template
+	$(TEMPLATE) $(DOCKERFILE).template
+
+gen-docker-compose: template
+	$(TEMPLATE) $(DOCKER_COMPOSE_FILE).template -c configs/docker_compose.ini
+
+docker-build:
 	$(DOCKER) build -t $(IMAGE_NAME) -f $(DOCKERFILE) .
 
 docker-start:
@@ -44,3 +48,6 @@ docker-clean: docker-stop
 	rm -f $(DOCKERFILE)
 	rm -f $(DOCKER_COMPOSE_FILE)
 	$(DOCKER) rmi -f $(IMAGE_NAME)
+
+cert-gen:
+	sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt

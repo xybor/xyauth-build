@@ -9,11 +9,7 @@ var config *xyconfig.Config
 func initConfig() {
 	config = xyconfig.GetConfig("xyauth")
 
-	if err := config.ReadFile("configs/default.ini", false); err != nil {
-		panic(err)
-	}
-
-	if err := config.ReadFile("configs/override.ini", true); err != nil {
+	if err := config.ReadFile("configs/default.ini", true); err != nil {
 		panic(err)
 	}
 

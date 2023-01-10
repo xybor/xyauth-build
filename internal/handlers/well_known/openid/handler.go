@@ -10,8 +10,8 @@ import (
 var Configuration = make(map[string]any)
 
 func init() {
-	domain := utils.GetConfig().MustGet("general.domain").MustString()
-	port := utils.GetConfig().MustGet("general.port").MustString()
+	domain := utils.GetConfig().MustGet("server.domain").MustString()
+	port := utils.GetConfig().MustGet("server.port").MustString()
 	issuer := "https://" + domain
 	if port != "443" {
 		issuer += ":" + port

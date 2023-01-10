@@ -1,21 +1,23 @@
 version: '3'
 services:
   postgresql:
-    container_name: postgresql
+    container_name: {{ .database.host }}
     image: postgres:12
+    command: -p {{ .database.port }}
     environment:
       - POSTGRES_USER={{ .POSTGRES_USER }}
       - POSTGRES_PASSWORD={{ .POSTGRES_PASSWORD }}
       - POSTGRES_DB={{ .POSTGRES_DB }}
+    expose:
+      - {{ .database.port }}
 
   xyauth:
     container_name: xyauth
     image: xyauth:latest
+    command: -c configs/docker_compose.ini
     ports:
-      - "127.0.0.1:{{ .server.port }}:{{ .server.port }}"
+      - "{{ .server.outbound_host }}:{{ .server.port }}:{{ .server.port }}"
     environment:
-      - POSTGRES_HOST=postgresql
-      - POSTGRES_PORT={{ .POSTGRES_PORT }}
       - POSTGRES_USER={{ .POSTGRES_USER }}
       - POSTGRES_PASSWORD={{ .POSTGRES_PASSWORD }}
       - POSTGRES_DB={{ .POSTGRES_DB }}

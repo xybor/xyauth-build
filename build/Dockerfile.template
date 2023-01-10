@@ -12,13 +12,15 @@ COPY cmd cmd/
 COPY internal internal/
 COPY pkg pkg/
 COPY web web/
-COPY {{ .server.public_key_path }} .
-COPY {{ .server.private_key_path }} .
+COPY {{ .server.public_key_path }} {{ .server.public_key_path }}
+COPY {{ .server.private_key_path }} {{ .server.private_key_path }}
+COPY {{ .oauth.public_key_path }} {{ .oauth.public_key_path }}
+COPY {{ .oauth.private_key_path }} {{ .oauth.private_key_path }}
 
 RUN go build -o /server ./cmd/server/*.go
 RUN go build -o /database ./cmd/database/*.go
 
-CMD ["/database"]
+CMD ["/database", "migrate"]
 
 ENTRYPOINT [ "/server" ]
 EXPOSE {{ .server.port }}

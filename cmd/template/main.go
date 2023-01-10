@@ -11,6 +11,7 @@ import (
 )
 
 var output string
+var configs []string
 var rootCmd = &cobra.Command{
 	Use:   "template",
 	Short: "Generate file from template",
@@ -41,6 +42,12 @@ var rootCmd = &cobra.Command{
 			panic(err)
 		}
 
+		for i := range configs {
+			if err := utils.GetConfig().ReadFile(configs[i], false); err != nil {
+				panic(err)
+			}
+		}
+
 		if err := t.Execute(fout, utils.GetConfig().ToMap()); err != nil {
 			panic(err)
 		}
@@ -50,7 +57,8 @@ var rootCmd = &cobra.Command{
 }
 
 func main() {
-	rootCmd.Flags().StringVarP(&output, "output", "o", "", "The output path")
+	rootCmd.Flags().StringVarP(&output, "output", "o", "", "Specifiy the output path")
+	rootCmd.Flags().StringArrayVarP(&configs, "config", "c", nil, "Specify overridden config files")
 	if err := rootCmd.Execute(); err != nil {
 		panic(err)
 	}
